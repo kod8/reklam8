@@ -33,8 +33,6 @@ function initReklam8() {
             myhtml.innerHTML = `<div id="reklam${cat}">${data}</div>`;
             new swal({ width: 900, timer: 100000, showCloseButton: true, html: myhtml, });
           }
-
-
         }
 
         else if (data.includes("google")) {
@@ -82,7 +80,7 @@ function lodaSwal() {
   loadExternalFile("https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.19.2/sweetalert2.css", "css")
 
   var customSwalStyle = document.createElement("style");
-  customstyle.innerHTML = `
+  customSwalStyle.innerHTML = `
 .swal2-popup .swal2-styled.swal2-confirm,.select-wrapper{
 	display:none;}
 	
@@ -93,7 +91,7 @@ function lodaSwal() {
 	}
 	}
 `
-  document.getElementsByTagName("head")[0].appendChild(customstyle)
+  document.getElementsByTagName("head")[0].appendChild(customSwalStyle)
 }
 
 //ADD TO ON LOAD EVENT
