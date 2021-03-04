@@ -1,4 +1,5 @@
 //---------------   MAIN FLOW
+loadGoogleAdsLibrary();
 lodaSwal();
 AddOnLoadEvent(initReklam8);
 
@@ -42,7 +43,7 @@ function initReklam8() {
           setTimeout(function () {
             console.log("google reklam");
             (adsbygoogle = window.adsbygoogle || []).push({})
-          }, 1000)
+          }, 500)
         }
 
         else {
@@ -58,17 +59,19 @@ function initReklam8() {
 //----------------- HELPERS
 
 //LOAD EXTERNAL FILES
-function loadExternalFile(filename, filetype) {
+function loadExternalFile(filename, filetype, isAsync) {
   if (filetype == "js") { //if filename is a external JavaScript file
     var fileref = document.createElement('script')
     fileref.setAttribute("type", "text/javascript")
-    fileref.setAttribute("src", filename)
+    fileref.setAttribute("src", filename);
+    isAsync ? fileref.setAttribute("async", "") : "";
   }
   else if (filetype == "css") { //if filename is an external CSS file
     var fileref = document.createElement("link")
     fileref.setAttribute("rel", "stylesheet")
     fileref.setAttribute("type", "text/css")
     fileref.setAttribute("href", filename)
+    isAsync ? fileref.setAttribute("async", "") : "";
   }
   if (typeof fileref != "undefined")
     document.getElementsByTagName("head")[0].appendChild(fileref)
@@ -94,6 +97,11 @@ function lodaSwal() {
   document.getElementsByTagName("head")[0].appendChild(customSwalStyle)
 }
 
+function loadGoogleAdsLibrary() {
+  const googlAdsURL = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+  loadExternalFile(googlAdsURL, "js", true);
+}
+
 //ADD TO ON LOAD EVENT
 function AddOnLoadEvent(functionX) {
   var oldonloadevent = window.onload;
@@ -109,8 +117,3 @@ function AddOnLoadEvent(functionX) {
     }
   }
 }
-
-
-
-
-
