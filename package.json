@@ -1,0 +1,13 @@
+{
+  "name": "reklam8.js",
+  "version": "0.0.1",
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "devDependencies": {
+    "babel-cli": "*",
+    "babel-preset-es2015": "*"
+  }
+}
