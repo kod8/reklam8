@@ -103,6 +103,7 @@ function showPopupAd(imgUrl) {
       styles.display = "flex";
       styles.alignItems = "center";
       styles.justifyContent = "center";
+      styles.padding="0"
     }
   }).show();
 
