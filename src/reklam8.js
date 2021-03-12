@@ -16,6 +16,7 @@ function initReklam8() {
         window.reklam8Ads--;
         if (data == 'yok') {
           ad.style = 'display:none;'
+          ad.closest(".reklam8container") ? ad.closest(".reklam8container").style = 'display:none;' : "";
         }
 
         else if (data.includes(`<!--17-->`)) {
