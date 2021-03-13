@@ -15,33 +15,47 @@ function initReklam8() {
         cat = _ad$dataset.cat,
         sid = _ad$dataset.sid;
     window.reklam8Ads = window.reklam8Ads ? window.reklam8Ads + 1 : 1;
-    fetch("https://api.reklam8.net/kaynak.asp?catid=".concat(cat, "&siteid=").concat(sid)).then(function (response) {
+    var url = "https://api.reklam8.net/kaynak.asp?catid=".concat(cat, "&siteid=").concat(sid);
+
+    if (ad.dataset.sira) {
+      url += "&sira=".concat(ad.dataset.sira);
+    }
+
+    fetch(url).then(function (response) {
       return response.text();
     }).then(function (data) {
       window.reklam8Ads--;
 
       if (data == 'yok') {
         ad.style = 'display:none;';
-      } else if (data.includes("<!--17-->")) {
-        var adContent = "<div id=\"reklam".concat(cat, "\">").concat(data, "</div>");
+        ad.closest(".reklam8container") ? ad.closest(".reklam8container").style = 'display:none;' : "";
+        console.error("Reklam Yok\n" + url);
+      } //TODO: change data.includes to  cat==17
+      else if (data.includes("<!--17-->")) {
+          var adContent = "<div id=\"reklam".concat(cat, "\">").concat(data, "</div>");
 
-        if (window.ana) {
-          showPopupAd(adContent);
-        } else if (sessionStorage.getItem("reklam") == "var") {} else {
-          sessionStorage.setItem("reklam", "var");
-          showPopupAd(adContent);
-        }
-      } else if (data.includes("google")) {
-        window.reklam8GoogleAds = window.reklam8GoogleAds ? window.reklam8GoogleAds + 1 : 1;
-        ad.innerHTML = data;
-        console.log(window.reklam8Ads + " " + window.reklam8GoogleAds);
-        setTimeout(function () {
-          console.log("google reklam");
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        }, 500);
-      } else {
-        ad.innerHTML = data;
-      }
+          if (window.ana) {
+            showPopupAd(adContent);
+          } else if (sessionStorage.getItem("reklam") == "var") {} else {
+            sessionStorage.setItem("reklam", "var");
+            showPopupAd(adContent);
+          }
+        } //manset reklamı varsa
+        else if (cat == "15") {
+            window.reklam8MansetAds = window.reklam8MansetAds ? window.reklam8MansetAds + 1 : 1;
+            addSlide(data, ad.dataset.sira * 3);
+            removeLastSlide();
+          } else if (data.includes("google")) {
+            window.reklam8GoogleAds = window.reklam8GoogleAds ? window.reklam8GoogleAds + 1 : 1;
+            ad.innerHTML = data;
+            console.log(window.reklam8Ads + " " + window.reklam8GoogleAds);
+            setTimeout(function () {
+              console.log("google reklam");
+              (adsbygoogle = window.adsbygoogle || []).push({});
+            }, 500);
+          } else {
+            ad.innerHTML = data;
+          }
     }); //end of fetch then
   }); //end of ads loop
 } //end of init
@@ -66,7 +80,7 @@ function loadExternalFile(filename, filetype, isAsync) {
   }
 
   if (typeof fileref != "undefined") document.getElementsByTagName("head")[0].appendChild(fileref);
-} //picomodal3.0
+} //picomodal 3.0
 
 
 function miniPopup() {
@@ -402,8 +416,53 @@ function showPopupAd(imgUrl) {
       styles.display = "flex";
       styles.alignItems = "center";
       styles.justifyContent = "center";
+      styles.padding = "0";
     }
   }).show();
+}
+
+function addSlide(adElement, index) {
+  var mansetElement = document.querySelector(".manset");
+  var sliderType = mansetElement.dataset.sliderType;
+
+  if (sliderType == "swiper") {
+    mansetElement.swiper.addSlide(index - 1, "<div class=\"swiper-slide\">".concat(adElement, "</div>")); //todo clean hover
+
+    document.querySelectorAll(".swiper-pagination-bullet").forEach(function (el) {
+      el.addEventListener("mouseover", function (e) {
+        return e.target.click();
+      });
+    });
+  } else if (sliderType == "slick") {
+    $(mansetElement).slick('slickAdd', adElement, index - 2);
+  } else {
+    console.error("Could not add ad to slider");
+  }
+
+  console.log("Successfully added ad to slider");
+}
+
+function removeLastSlide() {
+  var mansetElement = document.querySelector(".manset");
+  var sliderType = mansetElement.dataset.sliderType;
+
+  if (sliderType == "swiper") {
+    var lastIndex = mansetElement.swiper.pagination.el.childElementCount - 1;
+    mansetElement.swiper.removeSlide(lastIndex); //todo clean hover
+
+    document.querySelectorAll(".swiper-pagination-bullet").forEach(function (el) {
+      el.addEventListener("mouseover", function (e) {
+        return e.target.click();
+      });
+    });
+  } else if (sliderType == "slick") {
+    var lastIndex = $(mansetElement).slick("getSlick").slideCount;
+    $(mansetElement).slick('slickRemove', lastIndex - 1);
+  } else {
+    console.error("Error Removing Last News Slide");
+  }
+
+  console.log("Successfully removed last news Slide");
 }
 
 function loadGoogleAdsLibrary() {
