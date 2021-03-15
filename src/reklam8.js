@@ -38,7 +38,7 @@ function initReklam8() {
         //manset reklamı varsa
         else if (cat=="15") {
           window.reklam8MansetAds = window.reklam8MansetAds ? window.reklam8MansetAds + 1 : 1;
-          addSlide(data,ad.dataset.sira*3);
+          addSlide(data,ad.dataset.sira);
           removeLastSlide();
         }
 
@@ -161,11 +161,7 @@ function removeLastSlide(){
     console.error("Error Removing Last News Slide")
   }
   console.log("Successfully removed last news Slide");
-
 }
-
-
-
 
 function loadGoogleAdsLibrary() {
   const googlAdsURL = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"

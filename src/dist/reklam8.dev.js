@@ -43,7 +43,7 @@ function initReklam8() {
         } //manset reklamı varsa
         else if (cat == "15") {
             window.reklam8MansetAds = window.reklam8MansetAds ? window.reklam8MansetAds + 1 : 1;
-            addSlide(data, ad.dataset.sira * 3);
+            addSlide(data, ad.dataset.sira);
             removeLastSlide();
           } else if (data.includes("google")) {
             window.reklam8GoogleAds = window.reklam8GoogleAds ? window.reklam8GoogleAds + 1 : 1;
