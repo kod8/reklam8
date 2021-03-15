@@ -6,6 +6,7 @@ AddOnLoadEvent(initReklam8);
 function initReklam8() {
   window.ana = document.location.pathname === "/" ? true : false;
   var ads = document.querySelectorAll(".reklam8");
+  
   ads.forEach(ad => {
     var { cat, sid} = ad.dataset;
     window.reklam8Ads = window.reklam8Ads ? window.reklam8Ads + 1 : 1;
@@ -38,8 +39,12 @@ function initReklam8() {
         //manset reklamı varsa
         else if (cat=="15") {
           window.reklam8MansetAds = window.reklam8MansetAds ? window.reklam8MansetAds + 1 : 1;
-          addSlide(data,ad.dataset.sira);
-          removeLastSlide();
+          var mansetElement = document.querySelector(".manset");
+          var sliderType = mansetElement.dataset.sliderType;
+
+          addSlide(data, ad.dataset.sira, mansetElement, sliderType);
+          removeLastSlide(mansetElement, sliderType);
+          updateSliderBullets(mansetElement, sliderType);
         }
 
         else if (data.includes("google")) {
@@ -119,12 +124,9 @@ function showPopupAd(imgUrl) {
   }).show();
 }
 
-function addSlide(adElement,index){
-  var mansetElement = document.querySelector(".manset");
-  var sliderType = mansetElement.dataset.sliderType;
+function addSlide(adElement,index,mansetElement, sliderType){
   if(sliderType=="swiper"){
-    mansetElement.swiper.addSlide(index-1,`<div class="swiper-slide">${adElement}</div>`);
-
+    mansetElement.swiper.addSlide(index-1,`<div class="swiper-slide reklam8">${adElement}</div>`);
     //todo clean hover
     document.querySelectorAll(".swiper-pagination-bullet").forEach(el=>{
       el.addEventListener("mouseover",(e)=>e.target.click())
@@ -141,9 +143,7 @@ function addSlide(adElement,index){
   console.log("Successfully added ad to slider");
 }
 
-function removeLastSlide(){
-  var mansetElement = document.querySelector(".manset");
-  var sliderType = mansetElement.dataset.sliderType;
+function removeLastSlide(mansetElement, sliderType){
   if(sliderType=="swiper"){
     var lastIndex = mansetElement.swiper.pagination.el.childElementCount-1;
     mansetElement.swiper.removeSlide(lastIndex);
@@ -161,6 +161,18 @@ function removeLastSlide(){
     console.error("Error Removing Last News Slide")
   }
   console.log("Successfully removed last news Slide");
+}
+
+function updateSliderBullets(mansetElement, sliderType){
+  if(sliderType=="swiper"){
+    var paginationElements = mansetElement.querySelectorAll(".swiper-pagination-bullet");
+    mansetElement.querySelectorAll(".swiper-slide.reklam8").forEach(
+      function(reklam){
+        var index=reklam.dataset.swiperSlideIndex;
+        paginationElements[Number(index)].innerText="R";
+        paginationElements[Number(index)].style.color="#f99999";
+    });
+  }
 }
 
 function loadGoogleAdsLibrary() {
