@@ -43,8 +43,11 @@ function initReklam8() {
         } //manset reklamı varsa
         else if (cat == "15") {
             window.reklam8MansetAds = window.reklam8MansetAds ? window.reklam8MansetAds + 1 : 1;
-            addSlide(data, ad.dataset.sira);
-            removeLastSlide();
+            var mansetElement = document.querySelector(".manset");
+            var sliderType = mansetElement.dataset.sliderType;
+            addSlide(data, ad.dataset.sira, mansetElement, sliderType);
+            removeLastSlide(mansetElement, sliderType);
+            updateSliderBullets(mansetElement, sliderType);
           } else if (data.includes("google")) {
             window.reklam8GoogleAds = window.reklam8GoogleAds ? window.reklam8GoogleAds + 1 : 1;
             ad.innerHTML = data;
@@ -421,12 +424,9 @@ function showPopupAd(imgUrl) {
   }).show();
 }
 
-function addSlide(adElement, index) {
-  var mansetElement = document.querySelector(".manset");
-  var sliderType = mansetElement.dataset.sliderType;
-
+function addSlide(adElement, index, mansetElement, sliderType) {
   if (sliderType == "swiper") {
-    mansetElement.swiper.addSlide(index - 1, "<div class=\"swiper-slide\">".concat(adElement, "</div>")); //todo clean hover
+    mansetElement.swiper.addSlide(index - 1, "<div class=\"swiper-slide reklam8\">".concat(adElement, "</div>")); //todo clean hover
 
     document.querySelectorAll(".swiper-pagination-bullet").forEach(function (el) {
       el.addEventListener("mouseover", function (e) {
@@ -434,7 +434,8 @@ function addSlide(adElement, index) {
       });
     });
   } else if (sliderType == "slick") {
-    $(mansetElement).slick('slickAdd', adElement, index - 2);
+    var content = "\n    <div class=\"item\">\n<div class=\"thumb\">\n\t\t\t".concat(adElement, "\n</div>\n<div class=\"caption\">\n  <div class=\"category orange-text\">Sponsorlu</div>\n  <div class=\"meta\"></div>\n  <div class=\"entry-title\">\n    REKLAM\n  </div>\n</div>    \n</div>    \n\n    ");
+    $(mansetElement).slick('slickAdd', content, index - 2);
   } else {
     console.error("Could not add ad to slider");
   }
@@ -442,10 +443,7 @@ function addSlide(adElement, index) {
   console.log("Successfully added ad to slider");
 }
 
-function removeLastSlide() {
-  var mansetElement = document.querySelector(".manset");
-  var sliderType = mansetElement.dataset.sliderType;
-
+function removeLastSlide(mansetElement, sliderType) {
   if (sliderType == "swiper") {
     var lastIndex = mansetElement.swiper.pagination.el.childElementCount - 1;
     mansetElement.swiper.removeSlide(lastIndex); //todo clean hover
@@ -463,6 +461,17 @@ function removeLastSlide() {
   }
 
   console.log("Successfully removed last news Slide");
+}
+
+function updateSliderBullets(mansetElement, sliderType) {
+  if (sliderType == "swiper") {
+    var paginationElements = mansetElement.querySelectorAll(".swiper-pagination-bullet");
+    mansetElement.querySelectorAll(".swiper-slide.reklam8").forEach(function (reklam) {
+      var index = reklam.dataset.swiperSlideIndex;
+      paginationElements[Number(index)].innerText = "R";
+      paginationElements[Number(index)].style.color = "#f99999";
+    });
+  }
 }
 
 function loadGoogleAdsLibrary() {

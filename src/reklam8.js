@@ -6,21 +6,21 @@ AddOnLoadEvent(initReklam8);
 function initReklam8() {
   window.ana = document.location.pathname === "/" ? true : false;
   var ads = document.querySelectorAll(".reklam8");
-  
+
   ads.forEach(ad => {
-    var { cat, sid} = ad.dataset;
+    var { cat, sid } = ad.dataset;
     window.reklam8Ads = window.reklam8Ads ? window.reklam8Ads + 1 : 1;
     var url = `https://api.reklam8.net/kaynak.asp?catid=${cat}&siteid=${sid}`
-    if(ad.dataset.sira) { url+=`&sira=${ad.dataset.sira}`;}
+    if (ad.dataset.sira) { url += `&sira=${ad.dataset.sira}`; }
 
     fetch(url)
       .then(response => response.text())
       .then(data => {
         window.reklam8Ads--;
         if (data == 'yok') {
-            ad.style = 'display:none;'
-            ad.closest(".reklam8container") ? ad.closest(".reklam8container").style = 'display:none;' : "";
-            console.error("Reklam Yok\n" + url)
+          ad.style = 'display:none;'
+          ad.closest(".reklam8container") ? ad.closest(".reklam8container").style = 'display:none;' : "";
+          console.error("Reklam Yok\n" + url)
         }
         //TODO: change data.includes to  cat==17
         else if (data.includes(`<!--17-->`)) {
@@ -35,9 +35,9 @@ function initReklam8() {
             showPopupAd(adContent);
           }
         }
-        
+
         //manset reklamı varsa
-        else if (cat=="15") {
+        else if (cat == "15") {
           window.reklam8MansetAds = window.reklam8MansetAds ? window.reklam8MansetAds + 1 : 1;
           var mansetElement = document.querySelector(".manset");
           var sliderType = mansetElement.dataset.sliderType;
@@ -119,59 +119,74 @@ function showPopupAd(imgUrl) {
       styles.display = "flex";
       styles.alignItems = "center";
       styles.justifyContent = "center";
-      styles.padding="0"
+      styles.padding = "0"
     }
   }).show();
 }
 
-function addSlide(adElement,index,mansetElement, sliderType){
-  if(sliderType=="swiper"){
-    mansetElement.swiper.addSlide(index-1,`<div class="swiper-slide reklam8">${adElement}</div>`);
+function addSlide(adElement, index, mansetElement, sliderType) {
+  if (sliderType == "swiper") {
+    mansetElement.swiper.addSlide(index - 1, `<div class="swiper-slide reklam8">${adElement}</div>`);
     //todo clean hover
-    document.querySelectorAll(".swiper-pagination-bullet").forEach(el=>{
-      el.addEventListener("mouseover",(e)=>e.target.click())
+    document.querySelectorAll(".swiper-pagination-bullet").forEach(el => {
+      el.addEventListener("mouseover", (e) => e.target.click())
     })
   }
 
-  else if(sliderType=="slick"){
-    $(mansetElement).slick('slickAdd',adElement, index-2);
+  else if (sliderType == "slick") {
+    var content = `
+    <div class="item">
+<div class="thumb">
+			${adElement}
+</div>
+<div class="caption">
+  <div class="category orange-text">Sponsorlu</div>
+  <div class="meta"></div>
+  <div class="entry-title">
+    REKLAM
+  </div>
+</div>    
+</div>    
+
+    `
+    $(mansetElement).slick('slickAdd', content, index - 2);
   }
 
-  else{
+  else {
     console.error("Could not add ad to slider");
   }
   console.log("Successfully added ad to slider");
 }
 
-function removeLastSlide(mansetElement, sliderType){
-  if(sliderType=="swiper"){
-    var lastIndex = mansetElement.swiper.pagination.el.childElementCount-1;
+function removeLastSlide(mansetElement, sliderType) {
+  if (sliderType == "swiper") {
+    var lastIndex = mansetElement.swiper.pagination.el.childElementCount - 1;
     mansetElement.swiper.removeSlide(lastIndex);
     //todo clean hover
-    document.querySelectorAll(".swiper-pagination-bullet").forEach(el=>{
-      el.addEventListener("mouseover",(e)=>e.target.click())
+    document.querySelectorAll(".swiper-pagination-bullet").forEach(el => {
+      el.addEventListener("mouseover", (e) => e.target.click())
     })
   }
-  else if(sliderType=="slick"){
+  else if (sliderType == "slick") {
     var lastIndex = $(mansetElement).slick("getSlick").slideCount;
-    $(mansetElement).slick('slickRemove', lastIndex-1);
+    $(mansetElement).slick('slickRemove', lastIndex - 1);
   }
 
-  else{
+  else {
     console.error("Error Removing Last News Slide")
   }
   console.log("Successfully removed last news Slide");
 }
 
-function updateSliderBullets(mansetElement, sliderType){
-  if(sliderType=="swiper"){
+function updateSliderBullets(mansetElement, sliderType) {
+  if (sliderType == "swiper") {
     var paginationElements = mansetElement.querySelectorAll(".swiper-pagination-bullet");
     mansetElement.querySelectorAll(".swiper-slide.reklam8").forEach(
-      function(reklam){
-        var index=reklam.dataset.swiperSlideIndex;
-        paginationElements[Number(index)].innerText="R";
-        paginationElements[Number(index)].style.color="#f99999";
-    });
+      function (reklam) {
+        var index = reklam.dataset.swiperSlideIndex;
+        paginationElements[Number(index)].innerText = "R";
+        paginationElements[Number(index)].style.color = "#f99999";
+      });
   }
 }
 
