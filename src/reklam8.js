@@ -23,7 +23,7 @@ function initReklam8() {
           console.error("Reklam Yok\n" + url);
         }
         //TODO: change data.includes to  cat==17
-        else if (cat==17) {
+        else if (cat == 17) {
           var adContent = `<div id="reklam${cat}">${data}</div>`;
           var adDuration = ad.dataset.reklamSuresi || "10";
           if (window.ana) {
