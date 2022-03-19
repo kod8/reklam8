@@ -4,6 +4,10 @@ function getInnerText(selector,el) {
   return el.querySelector(selector).textContent.trim();
 }
 
+function randomNumber(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 if(!window.location.href.includes("duzcepostasi")){loadGoogleAdsLibrary()};
 miniPopup();
 AddOnLoadEvent(reklamlariGetir);
@@ -50,10 +54,9 @@ function initReklam8() {
 				console.error("Reklam Yok\n" +cat,sira);
 				return;
 			}
-					//console.log(data);
-			data=data[0].kod;
-
-
+					var randomIndex=randomNumber(0,data.length-1)
+					console.log(cat +" : " + data.length + " reklamdan " + (randomIndex+1) + ". reklam eklendi" );
+			data=data[randomIndex].kod;
 			
 			
 			if (cat==17) {
