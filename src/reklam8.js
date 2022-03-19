@@ -1,29 +1,62 @@
 //------------------------------- MAIN FLOW
+
+function getInnerText(selector,el) {
+  return el.querySelector(selector).textContent.trim();
+}
+
 if(!window.location.href.includes("duzcepostasi")){loadGoogleAdsLibrary()};
 miniPopup();
-AddOnLoadEvent(initReklam8);
+AddOnLoadEvent(reklamlariGetir);
+window.xmlParser=new DOMParser();
+
+function reklamlariGetir(){
+	window.siteid= document.querySelector(".reklam8").dataset.sid
+
+	fetch("https://api.reklam8.net/apixml.asp?siteid="+siteid)
+		.then(function(res) {return res.text()})
+		.then(function(data) {
+			window.reklamlar=xmlParser.parseFromString(data,"text/xml");
+			window.reklamlarObj=[...reklamlar.querySelectorAll("reklam")].map(function(reklam){
+			return {
+				  "id":getInnerText("id",reklam),
+				  "catid":getInnerText("catid", reklam),
+				  "resim":getInnerText("resim", reklam),
+				  "sira":getInnerText("sira", reklam),
+				  "url":getInnerText("url", reklam),
+				  "width":getInnerText("width", reklam),
+				  "height":getInnerText("height", reklam),
+				  "kod":getInnerText("kod", reklam)
+				}
+			});
+			initReklam8();
+		})	
+}
+
+
 
 function initReklam8() {
 	window.ana = document.location.pathname === "/" ? true : false;
 	var ads = document.querySelectorAll(".reklam8");
 	
 	ads.forEach(ad => {
-		var { cat, sid } = ad.dataset;
+		var { cat, sid,sira } = ad.dataset;
 		window.reklam8Ads = window.reklam8Ads ? window.reklam8Ads + 1 : 1;
-		var url = `https://api.reklam8.net/kaynak.asp?catid=${cat}&siteid=${sid}`
-		if (ad.dataset.sira) { url += `&sira=${ad.dataset.sira}`; }
-		
-		fetch(url)
-		.then(response => response.text())
-		.then(data => {
+		var data = sira ?  reklamlarObj.filter(function(reklam){return reklam.catid==cat&&reklam.sira==sira}) :reklamlarObj.filter(function(reklam){return reklam.catid==cat}) ;
+
 			window.reklam8Ads--;
-			if (data == 'yok') {
+			if (data.length==0) {
 				ad.style = 'display:none;'
 				ad.closest(".reklam8container") ? ad.closest(".reklam8container").style = 'display:none;' : "";
-				console.error("Reklam Yok\n" + url);
+				console.error("Reklam Yok\n" +cat,sira);
+				return;
 			}
-			//TODO: change data.includes to  cat==17
-			else if (cat==17) {
+					//console.log(data);
+			data=data[0].kod;
+
+
+			
+			
+			if (cat==17) {
 				var adContent = `<div id="reklam${cat}">${data}</div>`;
 				var adDuration = ad.dataset.reklamSuresi || "10";
 				if (Number(ad.dataset.reklamCiksinmi)) {
@@ -35,9 +68,9 @@ function initReklam8() {
 					showPopupAd(adContent, adDuration);
 					if (data.includes("google")) {
 						window.reklam8GoogleAds = window.reklam8GoogleAds ? window.reklam8GoogleAds + 1 : 1;
-						console.log(window.reklam8Ads + " " + window.reklam8GoogleAds)
+						//console.log(window.reklam8Ads + " " + window.reklam8GoogleAds)
 						setTimeout(function () {
-							console.log("google reklam");
+							//console.log("google reklam");
 							(adsbygoogle = window.adsbygoogle || []).push({})
 						}, 1000)
 					}
@@ -59,9 +92,9 @@ function initReklam8() {
 			else if (data.includes("google")) {
 				window.reklam8GoogleAds = window.reklam8GoogleAds ? window.reklam8GoogleAds + 1 : 1;
 				ad.innerHTML = data;
-				console.log(window.reklam8Ads + " " + window.reklam8GoogleAds)
+				//console.log(window.reklam8Ads + " " + window.reklam8GoogleAds)
 				setTimeout(function () {
-					console.log("google reklam");
+					//console.log("google reklam");
 					(adsbygoogle = window.adsbygoogle || []).push({})
 				}, 500)
 			}
@@ -69,8 +102,7 @@ function initReklam8() {
 			else {
 				ad.innerHTML = data;
 			}
-		});
-		//end of fetch then
+	
 	})
 	//end of ads loop
 }
@@ -196,9 +228,9 @@ $(mansetElement).slick('slickAdd', content, index - 2);
 }
 
 else {
-console.error("Could not add ad to slider");
+//console.error("Could not add ad to slider");
 }
-console.log("Successfully added ad to slider");
+//console.log("Successfully added ad to slider");
 }
 
 function removeLastSlide(mansetElement, sliderType) {
@@ -219,9 +251,9 @@ $(mansetElement).slick('slickRemove', lastIndex - 1);
 }
 
 else {
-console.error("Error Removing Last News Slide")
+//console.error("Error Removing Last News Slide")
 }
-console.log("Successfully removed last news Slide");
+//console.log("Successfully removed last news Slide");
 }
 
 function updateSliderBullets(mansetElement, sliderType) {
